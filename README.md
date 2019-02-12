@@ -16,11 +16,11 @@ Decorators to parse ``XLSX`` npm excel library read operation result to TypeScri
 
     class Demo {
 
-        @exceltRows(ResultClass)
+        @excelRows(ResultClass)
         private results: any;
 
         /** 
-        *  COPIED FROM ORIGINAL GITHUB REPO: https://github.com/SheetJS/js-xlsx/*  tree/1eb1ec985a640b71c5b5bbe006e240f45cf239ab/demos/angular2
+        *  SOURCE GITHUB REPO: https://github.com/SheetJS/js-xlsx/tree/1eb1ec985a640b71c5b5bbe006e240f45cf239ab/demos/angular2
         **/
         readExcelFile(file): void {
             const target: DataTransfer = <DataTransfer>(evt.target);
