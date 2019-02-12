@@ -3,7 +3,7 @@ Decorators to parse ``XLSX`` npm excel library read operation result to TypeScri
 
 ## Example
 
-````
+```typescript
     class ResultClass{
 
         @excelColumn('label')
