@@ -1,6 +1,6 @@
 import { EXCEL_METADATA, ORIGINAL_VALUE } from './constants';
 
-export function excelColumn(targetPropertyName: string, transformer: Function) {
+export function excelColumn(targetPropertyName: string, transformer?: (v) => any) {
   return function (target, key) {
     const originalValue = target[key];
     const metadata = target[EXCEL_METADATA] || {};
