@@ -1,4 +1,4 @@
-export const excelMetadata = 'EXCEL_TO_OBJECT';
+import { excelMetadata } from './constants';
 
 export function excelColumn(targetPropertyName: string) {
   return function(target, key) {

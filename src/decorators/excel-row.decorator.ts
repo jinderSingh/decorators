@@ -1,3 +1,4 @@
+import { excelMetadata } from './constants';
 export function excelRows < T > (targetClass: new() => T) {
   return function (target: any, key: string) {
     let value = target[key];
