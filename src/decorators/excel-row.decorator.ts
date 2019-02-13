@@ -12,30 +12,30 @@ export function excelRows < T > (targetClass: new() => T) {
       results
     }) {
       value = results.reduce((prev, next) => {
-        const obj = new targetClass();
-        const a = obj[EXCEL_METADATA];
-        for (const prop in a) {
-          if (a[prop]) {
-            headers.forEach((val, i) => {
-              if (val === obj[EXCEL_METADATA][prop]) {
-                const originalValue = next[i];
-                const transformer = obj[CELL_VALUE_TRANSFORMER] && obj[CELL_VALUE_TRANSFORMER][val];
+        const newInstanceOfTargetClass = new targetClass();
+        const metadata = newInstanceOfTargetClass[EXCEL_METADATA];
+        
+        headers.forEach((header, index) => {
+          const mappedPropertyName = getKeyIfValueIsEqualTo(header, metadata);
+          if (mappedPropertyName) {
+            const originalValue = next[index];
+            const transformer = newInstanceOfTargetClass[CELL_VALUE_TRANSFORMER] && newInstanceOfTargetClass[CELL_VALUE_TRANSFORMER][mappedPropertyName];
 
-                let valueToSet = originalValue;
+            let valueToSet = originalValue;
 
-                if (transformer) {
-                  valueToSet = transformer.call(undefined, valueToSet);
-                }
+            if (transformer) {
+              valueToSet = transformer.call(undefined, valueToSet);
+            }
 
-                obj[prop] = valueToSet;
-              }
-            });
+            newInstanceOfTargetClass[mappedPropertyName] = valueToSet;
           }
-        }
+        });
 
-        return prev.concat(obj);
+        return prev.concat(newInstanceOfTargetClass);
       }, []);
     };
+
+    
     if (delete target[key]) {
       Object.defineProperty(target, key, {
         get: getter,
@@ -45,4 +45,15 @@ export function excelRows < T > (targetClass: new() => T) {
       });
     }
   };
+}
+
+function getKeyIfValueIsEqualTo(valueToCompare, metadata): string | undefined {
+
+  for (const prop in metadata) {
+    if (metadata[prop] === valueToCompare) {
+      return prop;
+    }
+  }
+
+  return undefined;
 }

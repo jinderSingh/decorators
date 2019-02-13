@@ -10,7 +10,7 @@ export function excelColumn(targetPropertyName: string, transformer ? : (v) => a
       enumerable: true,
       configurable: true
     }
-    metadata[key] = targetPropertyName;
+    metadata[key] = targetPropertyName || key;
 
     if (transformer && typeof transformer === 'function') {
       transformers[key] = transformer;
