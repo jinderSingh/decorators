@@ -1,4 +1,4 @@
-import { EXCEL_METADATA } from './constants';
+import { CELL_VALUE_TRANSFORMER, EXCEL_METADATA } from './constants';
 export function excelRows < T > (targetClass: new() => T) {
   return function (target: any, key: string) {
     let value = target[key];
@@ -18,7 +18,16 @@ export function excelRows < T > (targetClass: new() => T) {
           if (a[prop]) {
             headers.forEach((val, i) => {
               if (val === obj[EXCEL_METADATA][prop]) {
-                obj[prop] = next[i];
+                const originalValue = next[i];
+                const transformer = obj[CELL_VALUE_TRANSFORMER] && obj[CELL_VALUE_TRANSFORMER][val];
+
+                let valueToSet = originalValue;
+
+                if (transformer) {
+                  valueToSet = transformer.call(undefined, valueToSet);
+                }
+
+                obj[prop] = valueToSet;
               }
             });
           }
