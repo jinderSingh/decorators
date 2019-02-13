@@ -1,4 +1,4 @@
-import { excelMetadata } from './constants';
+import { EXCEL_METADATA } from './constants';
 export function excelRows < T > (targetClass: new() => T) {
   return function (target: any, key: string) {
     let value = target[key];
@@ -13,11 +13,11 @@ export function excelRows < T > (targetClass: new() => T) {
     }) {
       value = results.reduce((prev, next) => {
         const obj = new targetClass();
-        const a = obj[excelMetadata];
+        const a = obj[EXCEL_METADATA];
         for (const prop in a) {
           if (a[prop]) {
             headers.forEach((val, i) => {
-              if (val === obj[excelMetadata][prop]) {
+              if (val === obj[EXCEL_METADATA][prop]) {
                 obj[prop] = next[i];
               }
             });
