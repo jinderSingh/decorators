@@ -1,5 +1,10 @@
 import { CELL_VALUE_TRANSFORMER, EXCEL_METADATA } from './constants';
-export function excelRows < T > (targetClass: new() => T) {
+
+/**
+ * Overrides setter and getter of property
+ * @param targetClass class type to which each row should be mapped
+ */
+export function excelRows<T>(targetClass: new () => T) {
   return function (target: any, key: string) {
     let value = target[key];
 
@@ -26,6 +31,12 @@ export function excelRows < T > (targetClass: new() => T) {
   };
 }
 
+/**
+ * Given headers array, rows and type class, returns array containing objects of type target class
+ * @param headers headers array
+ * @param results excel rows [][]
+ * @param targetClass class type which to map each row 
+ */
 export function mapValuesToTargetTypeObjects(headers, results, targetClass: new () => any) {
   return results.reduce((prev, next) => {
     const newInstanceOfTargetClass = new targetClass();
@@ -51,10 +62,16 @@ export function mapValuesToTargetTypeObjects(headers, results, targetClass: new 
   }, []);
 };
 
-function getKeyIfValueIsEqualTo(valueToCompare, metadata): string | undefined {
 
-  for (const prop in metadata) {
-    if (metadata[prop] === valueToCompare) {
+/**
+ * Returns property key if it's value equal to valueToCompare
+ * @param valueToCompare value to compare with
+ * @param object
+ */
+function getKeyIfValueIsEqualTo(valueToCompare, object): string | undefined {
+
+  for (const prop in object) {
+    if (object[prop] === valueToCompare) {
       return prop;
     }
   }
