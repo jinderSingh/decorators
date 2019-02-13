@@ -1,5 +1,10 @@
 import { CELL_VALUE_TRANSFORMER, EXCEL_METADATA } from './constants';
 
+/**
+ * Add's metadata to target class type
+ * @param targetPropertyName 
+ * @param transformer 
+ */
 export function excelColumn(targetPropertyName: string, transformer ? : (v) => any) {
   return function (target, key) {
     const metadata = target[EXCEL_METADATA] || {};
