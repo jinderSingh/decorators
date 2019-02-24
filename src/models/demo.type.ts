@@ -1,11 +1,11 @@
 import { excelColumn } from '../decorators/excel-column.decorator';
 
-export class TestType {
+export class DemoType {
 
-    @excelColumn('name')
+    @excelColumn({targetPropertyName: 'name'})
     private name: string;
 
-    @excelColumn('pre')
+    @excelColumn({targetPropertyName: 'pre'})
     private price: number;
 
     constructor() {}

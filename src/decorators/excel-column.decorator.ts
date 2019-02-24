@@ -1,11 +1,15 @@
-import { CELL_VALUE_TRANSFORMER, EXCEL_METADATA } from './constants';
+import { ExcelColumnType } from './../models/excel-column.type';
+import { CELL_VALUE_TRANSFORMER, COLUMN_NAMES, COLUMN_NUMBERS, EXCEL_METADATA } from './constants';
 
 /**
  * Add's metadata to target class type
  * @param targetPropertyName 
  * @param transformer 
  */
-export function excelColumn(targetPropertyName: string, transformer ? : (v) => any) {
+export function excelColumn({
+  columnNumber,
+  targetPropertyName
+}: ExcelColumnType, transformer ? : (v) => any) {
   return function (target, key) {
     const metadata = target[EXCEL_METADATA] || {};
     const transformers = target[CELL_VALUE_TRANSFORMER] || {};
@@ -15,7 +19,23 @@ export function excelColumn(targetPropertyName: string, transformer ? : (v) => a
       enumerable: true,
       configurable: true
     }
-    metadata[key] = targetPropertyName || key;
+
+    throwErrorIfBothArePresent(columnNumber, targetPropertyName);
+
+    if (metadata[COLUMN_NAMES] === undefined) {
+      metadata[COLUMN_NAMES] = {};
+    }
+
+    if (columnNumber) {
+      if (metadata[COLUMN_NUMBERS] === undefined) {
+        metadata[COLUMN_NUMBERS] = {};
+      }
+
+      metadata[COLUMN_NUMBERS][key] = columnNumber;
+    }
+
+    metadata[COLUMN_NAMES][key] = targetPropertyName || key;
+
 
     if (transformer && typeof transformer === 'function') {
       transformers[key] = transformer;
@@ -31,4 +51,11 @@ export function excelColumn(targetPropertyName: string, transformer ? : (v) => a
       value: metadata
     });
   };
+}
+
+
+const throwErrorIfBothArePresent = (first, second) => {
+  if (first && second) {
+    throw new Error(`Cann't use both 'targetPropertyName' and 'columnNumber'`);
+  }
 }

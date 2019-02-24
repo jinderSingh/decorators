@@ -1,10 +1,11 @@
-import { CELL_VALUE_TRANSFORMER, EXCEL_METADATA } from './constants';
+import { getKeyIfValueIsEqualTo, getObjectKeysValues, isObject, objectHasCustomProp } from '../util-methods';
+import { CELL_VALUE_TRANSFORMER, COLUMN_NAMES, COLUMN_NUMBERS, EXCEL_METADATA } from './constants';
 
 /**
  * Overrides setter and getter of property
  * @param targetClass class type to which each row should be mapped
  */
-export function excelRows<T>(targetClass: new () => T) {
+export function excelRows < T > (targetClass: new() => T) {
   return function (target: any, key: string) {
     let value = target[key];
 
@@ -12,11 +13,28 @@ export function excelRows<T>(targetClass: new () => T) {
       return value;
     };
 
-    const setter = function ({
-      headers,
-      results
-    }) {
-      value = mapValuesToTargetTypeObjects(headers, results, targetClass);
+    const setter = function (val: any) {
+      let result = null;
+      const typeInstance = new targetClass();
+      const metadata = typeInstance[EXCEL_METADATA];
+      if (Array.isArray(val)) {
+        const headers = getObjectKeysValues(metadata[COLUMN_NUMBERS]);
+        result = mapValuesToTargetTypeObjects(headers, val, targetClass, metadata[COLUMN_NUMBERS])
+      }
+
+      if (isObject(val)) {
+        if (!objectHasCustomProp(val, 'headers')) {
+          throw new Error(`Header property is not present for setter. Input should be {headers: [], results: []}`);
+        }
+        const {
+          headers,
+          results
+        } = val;
+        checkIfInputIsValid(headers, targetClass);
+        result = mapValuesToTargetTypeObjects(headers, results, targetClass, metadata[COLUMN_NAMES]);
+      }
+
+      value = result;
     };
 
 
@@ -37,10 +55,9 @@ export function excelRows<T>(targetClass: new () => T) {
  * @param results excel rows [][]
  * @param targetClass class type which to map each row 
  */
-export function mapValuesToTargetTypeObjects(headers, results, targetClass: new () => any) {
+export function mapValuesToTargetTypeObjects(headers, results, targetClass: new() => any, metadata: any) {
   return results.reduce((prev, next) => {
     const newInstanceOfTargetClass = new targetClass();
-    const metadata = newInstanceOfTargetClass[EXCEL_METADATA];
 
     headers.forEach((header, index) => {
       const mappedPropertyName = getKeyIfValueIsEqualTo(header, metadata);
@@ -63,18 +80,10 @@ export function mapValuesToTargetTypeObjects(headers, results, targetClass: new 
 };
 
 
-/**
- * Returns property key if it's value equal to valueToCompare
- * @param valueToCompare value to compare with
- * @param object
- */
-function getKeyIfValueIsEqualTo(valueToCompare, object): string | undefined {
-
-  for (const prop in object) {
-    if (object[prop] === valueToCompare) {
-      return prop;
-    }
+function checkIfInputIsValid(headers: string[], targetClass: new() => any) {
+  const instance = new targetClass();
+  if (!headers && !objectHasCustomProp(instance, COLUMN_NUMBERS)) {
+    throw new Error(`There are no headers present and column neither. 
+    To convert excel response to object please provide at least column number prop in @ExcelColumn decorator.`)
   }
-
-  return undefined;
 }
