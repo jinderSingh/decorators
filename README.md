@@ -79,7 +79,7 @@ Decorators to parse ``XLSX`` npm excel library read operation result to TypeScri
                 /* save data */
                 const data = <AOA>(XLSX.utils.sheet_to_json(ws, {header: 1}));
 
-                // excel file should not contain headers or slice result array to get remove headers row
+                // excel file should not contain headers or slice result array to remove headers row
                 this.results = data
             };
             reader.readAsBinaryString(target.files[0]);
