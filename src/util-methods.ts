@@ -37,5 +37,13 @@ export function getKeyIfValueIsEqualTo(valueToCompare, object): string | undefin
  * @param obj from where to extract values
  */
 export function getObjectKeysValues(obj): any[] {
+    if (Object['values']) {
+        return Object['values'](obj);
+    }
     return Object.keys(obj).map(key => obj[key]);
+}
+
+
+export function isFunction(fun): boolean {
+    return typeof fun === 'function';
 }

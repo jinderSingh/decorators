@@ -20,9 +20,7 @@ export function excelRows < T > (targetClass: new() => T) {
       if (Array.isArray(val)) {
         const headers = getObjectKeysValues(metadata[COLUMN_NUMBERS]);
         result = mapValuesToTargetTypeObjects(headers, val, targetClass, metadata[COLUMN_NUMBERS])
-      }
-
-      if (isObject(val)) {
+      } else if (isObject(val)) {
         if (!objectHasCustomProp(val, 'headers')) {
           throw new Error(`Header property is not present for setter. Input should be {headers: [], results: []}`);
         }

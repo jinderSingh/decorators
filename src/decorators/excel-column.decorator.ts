@@ -1,3 +1,4 @@
+import { isFunction } from '../util-methods';
 import { ExcelColumnType } from './../models/excel-column.type';
 import { CELL_VALUE_TRANSFORMER, COLUMN_NAMES, COLUMN_NUMBERS, EXCEL_METADATA } from './constants';
 
@@ -37,7 +38,7 @@ export function excelColumn({
     metadata[COLUMN_NAMES][key] = targetPropertyName || key;
 
 
-    if (transformer && typeof transformer === 'function') {
+    if (transformer && isFunction(transformer)) {
       transformers[key] = transformer;
     }
 

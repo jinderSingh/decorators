@@ -1,0 +1,29 @@
+{
+    "include": [
+        "src/**/*"
+    ],
+    "exclude": [
+        "node_modules",
+        "**/*.spec.ts"
+    ],
+    "compilerOptions": {
+        "lib": [
+            "es6"
+        ],
+        "types": [
+            "jasmine"
+        ],
+        "target": "es6",
+        "pretty": true,
+        "module": "commonjs",
+        "outDir": "./build",
+        "moduleResolution": "node",
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "allowSyntheticDefaultImports": true,
+        "sourceMap": true,
+        "typeRoots": [
+            "node_modules/@types"
+        ],
+    }
+}
