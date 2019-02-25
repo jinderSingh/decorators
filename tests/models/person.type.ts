@@ -3,16 +3,16 @@ import { excelColumn } from "../../src/decorators/excel-column.decorator";
 export class PersonType {
 
     @excelColumn({targetPropertyName: 'name'})
-    public name: string;
+    name: string;
 
     @excelColumn({targetPropertyName: 'lastName'})
-    public lastName: string;
+    lastName: string;
 
     @excelColumn({targetPropertyName: 'salary'})
-    public salary: number;
+    salary: number;
 
     @excelColumn({targetPropertyName: 'age'})
-    public age: number;
+    age: number;
 
     constructor(){}
 }

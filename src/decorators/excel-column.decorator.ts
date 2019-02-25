@@ -27,7 +27,7 @@ export function excelColumn({
       metadata[COLUMN_NAMES] = {};
     }
 
-    if (columnNumber) {
+    if (columnNumber !== undefined && columnNumber !== null) {
       if (metadata[COLUMN_NUMBERS] === undefined) {
         metadata[COLUMN_NUMBERS] = {};
       }
@@ -55,8 +55,8 @@ export function excelColumn({
 }
 
 
-const throwErrorIfBothArePresent = (first, second) => {
+function throwErrorIfBothArePresent(first, second) {
   if (first && second) {
-    throw new Error(`Cann't use both 'targetPropertyName' and 'columnNumber'`);
+    throw new Error(`Can't use both properties 'targetPropertyName' & 'columnNumber' at same time.`);
   }
 }
