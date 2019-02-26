@@ -52,7 +52,7 @@ const defaultExcelParsedValues = [
 
 
 
-describe('map excel parsed data to array of objects', function () {
+xdescribe('map excel parsed data to array of objects', function () {
     it('should map result to object with headers', function () {
 
         const personImpl = new PersonImplementation();
@@ -72,7 +72,7 @@ describe('map excel parsed data to array of objects', function () {
     it('should throw error if headers property is not present', function () {
 
         const personImpl = new PersonImplementation();
-        const expectedError = new Error(`Header property is not present for setter. Input should be {headers: [], results: []}`);
+        const expectedError = new Error(`Please provide 'headers' property in the values.`);
 
         expect(personImpl.parseExcel.bind(personImpl,({
             results: defaultExcelParsedValues

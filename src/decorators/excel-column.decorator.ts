@@ -44,7 +44,7 @@ export function excelColumn({
 
     Object.defineProperty(target, CELL_VALUE_TRANSFORMER, {
       ...properties,
-      value: transformer
+      value: transformers
     });
 
     Object.defineProperty(target, EXCEL_METADATA, {

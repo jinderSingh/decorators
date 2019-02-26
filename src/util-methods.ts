@@ -22,7 +22,6 @@ export function isObject(obj): boolean {
  * @param object
  */
 export function getKeyIfValueIsEqualTo(valueToCompare, object): string | undefined {
-
     for (const prop in object) {
         if (object[prop] === valueToCompare) {
             return prop;

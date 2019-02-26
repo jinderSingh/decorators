@@ -14,25 +14,30 @@ export function excelRows < T > (targetClass: new() => T) {
     };
 
     const setter = function (val: any) {
-      let result = null;
-      const typeInstance = new targetClass();
-      const metadata = typeInstance[EXCEL_METADATA];
-      if (Array.isArray(val)) {
-        const headers = getObjectKeysValues(metadata[COLUMN_NUMBERS]);
-        result = mapValuesToTargetTypeObjects(headers, val, targetClass, metadata[COLUMN_NUMBERS])
-      } else if (isObject(val)) {
-        if (!objectHasCustomProp(val, 'headers')) {
-          throw new Error(`Header property is not present for setter. Input should be {headers: [], results: []}`);
-        }
-        const {
-          headers,
-          results
-        } = val;
-        checkIfInputIsValid(headers, targetClass);
-        result = mapValuesToTargetTypeObjects(headers, results, targetClass, metadata[COLUMN_NAMES]);
+      if (!val) {
+        return;
       }
 
-      value = result;
+      const typeInstance = new targetClass();
+      const metadata = typeInstance[EXCEL_METADATA];
+
+      let headers, results = val,
+        metadataToUse = metadata[COLUMN_NUMBERS];
+
+      throwErrorIfInputIsInvalid(val, typeInstance);
+
+      if (Array.isArray(val)) {
+        headers = getObjectKeysValues(metadata[COLUMN_NUMBERS]);
+      } else if (isObject(val)) {
+        headers = val.headers;
+        results = val.results;
+        metadataToUse = metadata[COLUMN_NAMES];
+      } else {
+        return;
+      }
+
+      value = mapValuesToTargetTypeObjects(headers, results, targetClass, metadataToUse);
+
     };
 
 
@@ -60,15 +65,14 @@ export function mapValuesToTargetTypeObjects(headers, results, targetClass: new(
     headers.forEach((header, index) => {
       const mappedPropertyName = getKeyIfValueIsEqualTo(header, metadata);
       if (mappedPropertyName) {
-        const originalValue = next[index];
         const transformer = newInstanceOfTargetClass[CELL_VALUE_TRANSFORMER] && newInstanceOfTargetClass[CELL_VALUE_TRANSFORMER][mappedPropertyName];
-
-        let valueToSet = originalValue;
+        
+        let valueToSet = next[index]; // todo when using columnNumber it should get value next[columnNumber] and other cases should be next[index]
 
         if (transformer) {
           valueToSet = transformer.call(undefined, valueToSet);
         }
-
+        console.log(mappedPropertyName, valueToSet);
         newInstanceOfTargetClass[mappedPropertyName] = valueToSet;
       }
     });
@@ -78,10 +82,17 @@ export function mapValuesToTargetTypeObjects(headers, results, targetClass: new(
 };
 
 
-function checkIfInputIsValid(headers: string[], targetClass: new() => any) {
-  const instance = new targetClass();
-  if (!headers && !objectHasCustomProp(instance, COLUMN_NUMBERS)) {
-    throw new Error(`There are no headers present and column neither. 
-    To convert excel response to object please provide at least column number prop in @ExcelColumn decorator.`)
+function throwErrorIfInputIsInvalid(val: any, targetClassInstance: any) {
+
+  if (Array.isArray(val)) {
+    if (!objectHasCustomProp(targetClassInstance[EXCEL_METADATA], COLUMN_NUMBERS)) {
+      throw new Error(`When setting value without headers please use 'columnNumber' property of @excelColumn decorator.`);
+    }
+    return;
   }
+
+  if (isObject(val) && !objectHasCustomProp(val, 'headers')) {
+    throw new Error(`Please provide 'headers' property in the values.`)
+  }
+
 }
