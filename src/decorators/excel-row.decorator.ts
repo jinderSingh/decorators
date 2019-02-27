@@ -106,7 +106,7 @@ function getValueMapper(values: any, metadata): (obj, rows: any[]) => any {
  * @param val 
  * @param targetClassInstance 
  */
-function throwErrorIfInputIsInvalid(val: any, targetClassInstance: any) {
+function throwErrorIfInputIsInvalid(val: any, targetClassInstance: any): void {
 
   if (Array.isArray(val)) {
     if (!objectHasCustomProp(targetClassInstance[EXCEL_METADATA], COLUMN_NUMBERS)) {
