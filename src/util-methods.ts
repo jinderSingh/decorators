@@ -43,6 +43,10 @@ export function getObjectKeysValues(obj): any[] {
 }
 
 
+/**
+ * checks if argument is type of function
+ * @param fun 
+ */
 export function isFunction(fun): boolean {
     return typeof fun === 'function';
 }

@@ -52,7 +52,7 @@ export function excelRows < T > (targetClass: new() => T) {
  * @param results excel rows [][]
  * @param targetClass class type which to map each row 
  */
-export function mapValuesToTargetTypeObjects(results: any[], targetClass: new() => any, mapper: (obj, rows: any[]) => any) {
+function mapValuesToTargetTypeObjects(results: any[], targetClass: new() => any, mapper: (obj, rows: any[]) => any) {
   return results.reduce((prev, next) => {
     const newInstanceOfTargetClass = new targetClass();
     mapper(newInstanceOfTargetClass, next);
@@ -61,6 +61,11 @@ export function mapValuesToTargetTypeObjects(results: any[], targetClass: new() 
 };
 
 
+/**
+ * returns function to map row values to object properties
+ * @param values
+ * @param metadata 
+ */
 function getValueMapper(values: any, metadata): (obj, rows: any[]) => any {
   let headers;
   const isValuesTypeOfArray = Array.isArray(values);
