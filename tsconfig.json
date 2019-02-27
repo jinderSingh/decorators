@@ -4,7 +4,8 @@
     ],
     "exclude": [
         "node_modules",
-        "**/*.spec.ts"
+        "**/*.test.ts",
+        "**/*.spec.ts",
     ],
     "compilerOptions": {
         "lib": [
@@ -14,10 +15,10 @@
             "jasmine",
             "node"
         ],
-        "target": "es6",
+        "target": "es5",
         "pretty": true,
         "module": "commonjs",
-        "outDir": "./build",
+        "outDir": "./dist",
         "moduleResolution": "node",
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
