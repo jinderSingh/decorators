@@ -55,6 +55,11 @@ export function excelColumn({
 }
 
 
+/**
+ * throws exception, if both arguments values are present
+ * @param first 
+ * @param second 
+ */
 function throwErrorIfBothArePresent(first, second) {
   if (first && second) {
     throw new Error(`Can't use both properties 'targetPropertyName' & 'columnNumber' at same time.`);

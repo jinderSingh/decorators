@@ -56,7 +56,7 @@ export function isFunction(fun): boolean {
  * @param obj 
  * @param prop 
  */
-export function getNestedPropertyValueFromObject(obj, prop) {
+export function getNestedPropertyValueFromObject(obj, prop): any {
     if (!obj || !prop) {
         return;
     }
