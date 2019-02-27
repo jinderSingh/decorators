@@ -46,3 +46,16 @@ export function getObjectKeysValues(obj): any[] {
 export function isFunction(fun): boolean {
     return typeof fun === 'function';
 }
+
+/**
+ * gets property value from nested object
+ * @param obj 
+ * @param prop 
+ */
+export function getNestedPropertyValueFromObject(obj, prop) {
+    if (!obj || !prop) {
+        return;
+    }
+    return Object.keys(obj)
+        .reduce((prev, next) => obj[prop] || obj[next][prop], undefined);
+}

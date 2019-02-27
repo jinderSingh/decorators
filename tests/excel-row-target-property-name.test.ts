@@ -52,7 +52,7 @@ const defaultExcelParsedValues = [
 
 
 
-xdescribe('map excel parsed data to array of objects', function () {
+describe('map excel parsed data to array of objects', function () {
     it('should map result to object with headers', function () {
 
         const personImpl = new PersonImplementation();

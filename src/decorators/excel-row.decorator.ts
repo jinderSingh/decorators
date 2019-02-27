@@ -1,4 +1,4 @@
-import { getKeyIfValueIsEqualTo, getObjectKeysValues, isObject, objectHasCustomProp } from '../util-methods';
+import { getKeyIfValueIsEqualTo, getNestedPropertyValueFromObject, getObjectKeysValues, isObject, objectHasCustomProp } from '../util-methods';
 import { CELL_VALUE_TRANSFORMER, COLUMN_NAMES, COLUMN_NUMBERS, EXCEL_METADATA } from './constants';
 
 /**
@@ -21,22 +21,16 @@ export function excelRows < T > (targetClass: new() => T) {
       const typeInstance = new targetClass();
       const metadata = typeInstance[EXCEL_METADATA];
 
-      let headers, results = val,
-        metadataToUse = metadata[COLUMN_NUMBERS];
-
       throwErrorIfInputIsInvalid(val, typeInstance);
 
-      if (Array.isArray(val)) {
-        headers = getObjectKeysValues(metadata[COLUMN_NUMBERS]);
-      } else if (isObject(val)) {
-        headers = val.headers;
-        results = val.results;
-        metadataToUse = metadata[COLUMN_NAMES];
-      } else {
+      const mapper = getValueMapper(val, metadata);
+
+      if (!mapper) {
         return;
       }
 
-      value = mapValuesToTargetTypeObjects(headers, results, targetClass, metadataToUse);
+      const results = Array.isArray(val) ? val : val.results;
+      value = mapValuesToTargetTypeObjects(results, targetClass, mapper);
 
     };
 
@@ -58,30 +52,55 @@ export function excelRows < T > (targetClass: new() => T) {
  * @param results excel rows [][]
  * @param targetClass class type which to map each row 
  */
-export function mapValuesToTargetTypeObjects(headers, results, targetClass: new() => any, metadata: any) {
+export function mapValuesToTargetTypeObjects(results: any[], targetClass: new() => any, mapper: (obj, rows: any[]) => any) {
   return results.reduce((prev, next) => {
     const newInstanceOfTargetClass = new targetClass();
-
-    headers.forEach((header, index) => {
-      const mappedPropertyName = getKeyIfValueIsEqualTo(header, metadata);
-      if (mappedPropertyName) {
-        const transformer = newInstanceOfTargetClass[CELL_VALUE_TRANSFORMER] && newInstanceOfTargetClass[CELL_VALUE_TRANSFORMER][mappedPropertyName];
-        
-        let valueToSet = next[index]; // todo when using columnNumber it should get value next[columnNumber] and other cases should be next[index]
-
-        if (transformer) {
-          valueToSet = transformer.call(undefined, valueToSet);
-        }
-        console.log(mappedPropertyName, valueToSet);
-        newInstanceOfTargetClass[mappedPropertyName] = valueToSet;
-      }
-    });
-
+    mapper(newInstanceOfTargetClass, next);
     return prev.concat(newInstanceOfTargetClass);
   }, []);
 };
 
 
+function getValueMapper(values: any, metadata): (obj, rows: any[]) => any {
+  let headers;
+  const isValuesTypeOfArray = Array.isArray(values);
+  if (isValuesTypeOfArray) {
+    headers = getObjectKeysValues(metadata[COLUMN_NUMBERS]);
+  } else if (isObject(values)) {
+    headers = values.headers;
+  } else {
+    return;
+  }
+
+  const metadataToUse = metadata[isValuesTypeOfArray ? COLUMN_NUMBERS : COLUMN_NAMES];
+
+  return (newInstance, rows: any[]) => {
+    headers.forEach((header, index) => {
+      const mappedPropertyName = getKeyIfValueIsEqualTo(header, metadataToUse);
+
+      if (mappedPropertyName) {
+        const valueIndex = isValuesTypeOfArray ? +metadataToUse[mappedPropertyName] : index;
+
+        const transformer = getNestedPropertyValueFromObject(newInstance[CELL_VALUE_TRANSFORMER], mappedPropertyName);
+
+        let valueToSet = rows[valueIndex];
+        
+        if (transformer) {
+          valueToSet = transformer.call(undefined, valueToSet);
+        }
+        newInstance[mappedPropertyName] = valueToSet;
+      }
+    });
+  }
+}
+
+
+
+/**
+ * throws expection if input to the setter method is invalid
+ * @param val 
+ * @param targetClassInstance 
+ */
 function throwErrorIfInputIsInvalid(val: any, targetClassInstance: any) {
 
   if (Array.isArray(val)) {

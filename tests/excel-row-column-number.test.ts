@@ -58,8 +58,6 @@ describe('map excel parsed data to array of objects', function () {
 
         addressImpl.parseExcel(defaultExcelParsedValues);
 
-        console.log(addressImpl.addresses, 'addresss');
-
         expect(addressImpl.addresses).toBeTruthy();
 
         expect(addressImpl.addresses)
