@@ -63,3 +63,15 @@ export function getNestedPropertyValueFromObject(obj, prop): any {
     return Object.keys(obj)
         .reduce((prev, next) => obj[prop] || obj[next][prop], undefined);
 }
+
+
+/**
+ * checks if array is empty or not
+ * @param val 
+ */
+export function isArrayNotEmpty(arr: []): boolean {
+    if (!arr) {
+        return;
+    }
+    return Array.isArray(arr) && arr.length > 0;
+}

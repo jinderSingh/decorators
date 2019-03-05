@@ -1,4 +1,4 @@
-import { getKeyIfValueIsEqualTo, getNestedPropertyValueFromObject, getObjectKeysValues, isObject, objectHasCustomProp } from '../util-methods';
+import { getKeyIfValueIsEqualTo, getNestedPropertyValueFromObject, getObjectKeysValues, isArrayNotEmpty, isObject, objectHasCustomProp } from '../util-methods';
 import { CELL_VALUE_TRANSFORMER, COLUMN_NAMES, COLUMN_NUMBERS, EXCEL_METADATA } from './constants';
 
 /**
@@ -55,6 +55,9 @@ export function excelRows < T > (targetClass: new() => T) {
 function mapValuesToTargetTypeObjects(results: any[], targetClass: new() => any, mapper: (obj, rows: any[]) => void): any[] {
   return results.reduce((prev, next) => {
     const newInstanceOfTargetClass = new targetClass();
+    if (!isArrayNotEmpty(next)) {
+      return prev;
+    }
     mapper(newInstanceOfTargetClass, next);
     return prev.concat(newInstanceOfTargetClass);
   }, []);
@@ -79,9 +82,11 @@ function getValueMapper(values: any, metadata): (obj, rows: any[]) => void {
 
   const metadataToUse = metadata[isValuesTypeOfArray ? COLUMN_NUMBERS : COLUMN_NAMES];
 
+  const propertyNamesCache = {};
+
   return (newInstance, rows: any[]) => {
     headers.forEach((header, index) => {
-      const mappedPropertyName = getKeyIfValueIsEqualTo(header, metadataToUse);
+      const mappedPropertyName = propertyNamesCache[header] || getKeyIfValueIsEqualTo(header, metadataToUse);
 
       if (mappedPropertyName) {
         const valueIndex = isValuesTypeOfArray ? +metadataToUse[mappedPropertyName] : index;
@@ -89,11 +94,12 @@ function getValueMapper(values: any, metadata): (obj, rows: any[]) => void {
         const transformer = getNestedPropertyValueFromObject(newInstance[CELL_VALUE_TRANSFORMER], mappedPropertyName);
 
         let valueToSet = rows[valueIndex];
-        
+
         if (transformer) {
           valueToSet = transformer.call(undefined, valueToSet);
         }
         newInstance[mappedPropertyName] = valueToSet;
+        propertyNamesCache[header] = mappedPropertyName;
       }
     });
   }
