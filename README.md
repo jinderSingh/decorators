@@ -89,3 +89,6 @@ Decorators to parse ``XLSX`` npm excel library read operation result to TypeScri
 
 
 ```
+
+## Example project
+[Example project](https://github.com/jinderSingh/decorator-demo)
