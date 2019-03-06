@@ -1,6 +1,6 @@
 {
   "name": "excel-to-object-decorator",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "Decorators to map excel results to typescript class or javascript object",
   "main": "dist/index.js",
   "scripts": {
