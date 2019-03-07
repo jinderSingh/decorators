@@ -1,4 +1,4 @@
-import { isFunction } from '../util-methods';
+import { isFunction, exists } from '../util-methods';
 import { ExcelColumnType } from './../models/excel-column.type';
 import { CELL_VALUE_TRANSFORMER, COLUMN_NAMES, COLUMN_NUMBERS, EXCEL_METADATA } from './constants';
 
@@ -61,7 +61,10 @@ export function excelColumn({
  * @param second 
  */
 function throwErrorIfBothArePresent(first, second) {
-  if (first && second) {
+
+  const bothArePresent = exists(first) && exists(second);
+
+  if (bothArePresent) {
     throw new Error(`Can't use both properties 'targetPropertyName' & 'columnNumber' at same time.`);
   }
 }

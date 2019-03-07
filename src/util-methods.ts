@@ -75,3 +75,12 @@ export function isArrayNotEmpty(arr: []): boolean {
     }
     return Array.isArray(arr) && arr.length > 0;
 }
+
+/**
+ * Check if input exists
+ * @param {T} value
+ * @returns {boolean}
+ */
+export function exists<T>(value: T): boolean {
+    return value !== null || value !== undefined;
+}
