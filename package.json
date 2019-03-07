@@ -4,7 +4,7 @@
   "description": "Decorators to map excel results to typescript class or javascript object",
   "main": "dist/index.js",
   "scripts": {
-    "test": "jasmine-ts --config=jasmine.json",
+    "test": "node_modules/.bin/jasmine-ts --config=jasmine.json",
     "build": "tsc"
   },
   "repository": {
@@ -26,11 +26,11 @@
   "homepage": "https://github.com/jinderSingh/decorators#readme",
   "devDependencies": {
     "@types/jasmine": "^3.3.9",
+    "@types/node": "^11.10.4",
     "jasmine": "^3.3.1",
     "jasmine-ts": "^0.3.0",
     "ts-node": "^8.0.2",
-    "typescript": "^3.3.3333",
-    "@types/node": "^11.10.4"
+    "typescript": "^3.3.3333"
   },
   "dependencies": {}
 }

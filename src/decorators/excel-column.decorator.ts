@@ -1,6 +1,6 @@
-import { isFunction } from '../util-methods';
+import { hasValue, isFunction } from '../util-methods';
 import { ExcelColumnType } from './../models/excel-column.type';
-import { CELL_VALUE_TRANSFORMER, COLUMN_NAMES, COLUMN_NUMBERS, EXCEL_METADATA } from './constants';
+import { CELL_VALUE_TRANSFORMER, COLUMN_NAMES, COLUMN_NUMBERS, EXCEL_METADATA, PROP } from './constants';
 
 /**
  * Add's metadata to target class type
@@ -13,7 +13,6 @@ export function excelColumn({
 }: ExcelColumnType, transformer ? : (v) => any) {
   return function (target, key) {
     const metadata = target[EXCEL_METADATA] || {};
-    const transformers = target[CELL_VALUE_TRANSFORMER] || {};
 
     const properties = {
       writable: true,
@@ -21,7 +20,7 @@ export function excelColumn({
       configurable: true
     }
 
-    throwErrorIfBothArePresent(columnNumber, targetPropertyName);
+    throwErrorIfBothArePresent(columnNumber, targetPropertyName, target);
 
     if (metadata[COLUMN_NAMES] === undefined) {
       metadata[COLUMN_NAMES] = {};
@@ -32,20 +31,16 @@ export function excelColumn({
         metadata[COLUMN_NUMBERS] = {};
       }
 
-      metadata[COLUMN_NUMBERS][key] = columnNumber;
+      metadata[COLUMN_NUMBERS][key] = {
+        [PROP]: columnNumber,
+        [CELL_VALUE_TRANSFORMER]: transformer && isFunction(transformer) ? transformer : null
+      };
     }
 
-    metadata[COLUMN_NAMES][key] = targetPropertyName || key;
-
-
-    if (transformer && isFunction(transformer)) {
-      transformers[key] = transformer;
-    }
-
-    Object.defineProperty(target, CELL_VALUE_TRANSFORMER, {
-      ...properties,
-      value: transformers
-    });
+    metadata[COLUMN_NAMES][key] = {
+      [PROP]: targetPropertyName || key,
+      [CELL_VALUE_TRANSFORMER]: transformer && isFunction(transformer) ? transformer : null
+    };
 
     Object.defineProperty(target, EXCEL_METADATA, {
       ...properties,
@@ -60,8 +55,8 @@ export function excelColumn({
  * @param first 
  * @param second 
  */
-function throwErrorIfBothArePresent(first, second) {
-  if (first && second) {
-    throw new Error(`Can't use both properties 'targetPropertyName' & 'columnNumber' at same time.`);
+function throwErrorIfBothArePresent(first, second, type: any) {
+  if (hasValue(first) && hasValue(second)) {
+    throw new Error(`Can't use both properties 'targetPropertyName' & 'columnNumber' at same time in ${type && type.constructor.name}.`);
   }
 }

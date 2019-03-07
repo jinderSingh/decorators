@@ -69,13 +69,14 @@ describe('map excel parsed data to array of objects', function () {
 
 
     it('should throw error if both properties (targetPropertyName & columnNumber) are present in @excelColumn', function () {
-        const expectedError = new Error(`Can't use both properties 'targetPropertyName' & 'columnNumber' at same time.`);
+        const type = {};
+        const expectedError = new Error(`Can't use both properties 'targetPropertyName' & 'columnNumber' at same time in ${type.constructor.name}.`);
 
         expect(function () {
             excelColumn({
                 targetPropertyName: 'name',
                 columnNumber: 2
-            })({}, 'name')
+            })(type, 'name')
         }).toThrow(expectedError);
     });
 
