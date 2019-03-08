@@ -79,13 +79,13 @@ export function isArrayNotEmpty(arr: []): boolean {
 }
 
 /**
- * checks if 'val' is different to null & undefined
- * @param val 
+ * Check if input has any value
+ * @param {T} value
+ * @returns {boolean}
  */
-export function hasValue(val: any): boolean {
-    return val !== null && val !== undefined;
+export function hasValue<T>(value: T): boolean {
+    return value !== null && value !== undefined;
 }
-
 
 /**
  * converts array of objects to array of arrays, using classType metadata
@@ -96,13 +96,4 @@ export function hasValue(val: any): boolean {
 export function objectToExcel(objectArrays: any[], classType: new () => any): any[][] {
     const metadata = classType.prototype[EXCEL_METADATA];
     return null;
-}
-
-/**
- * Check if input exists
- * @param {T} value
- * @returns {boolean}
- */
-export function exists<T>(value: T): boolean {
-    return value !== null || value !== undefined;
 }

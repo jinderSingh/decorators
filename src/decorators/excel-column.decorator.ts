@@ -56,7 +56,10 @@ export function excelColumn({
  * @param second 
  */
 function throwErrorIfBothArePresent(first, second, type: any) {
-  if (hasValue(first) && hasValue(second)) {
+
+  const bothArePresent = hasValue(first) && hasValue(second);
+
+  if (bothArePresent) {
     throw new Error(`Can't use both properties 'targetPropertyName' & 'columnNumber' at same time in ${type && type.constructor.name}.`);
   }
 }
