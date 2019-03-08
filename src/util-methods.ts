@@ -1,3 +1,5 @@
+import { EXCEL_METADATA } from "./decorators/constants";
+
 /**
  * checks if object has property
  * @param object 
@@ -74,6 +76,26 @@ export function isArrayNotEmpty(arr: []): boolean {
         return;
     }
     return Array.isArray(arr) && arr.length > 0;
+}
+
+/**
+ * checks if 'val' is different to null & undefined
+ * @param val 
+ */
+export function hasValue(val: any): boolean {
+    return val !== null && val !== undefined;
+}
+
+
+/**
+ * converts array of objects to array of arrays, using classType metadata
+ * TODO implement the logic
+ * @param objectArrays 
+ * @param classType 
+ */
+export function objectToExcel(objectArrays: any[], classType: new () => any): any[][] {
+    const metadata = classType.prototype[EXCEL_METADATA];
+    return null;
 }
 
 /**

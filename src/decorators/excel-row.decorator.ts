@@ -1,5 +1,5 @@
-import { getKeyIfValueIsEqualTo, getNestedPropertyValueFromObject, getObjectKeysValues, isArrayNotEmpty, isObject, objectHasCustomProp } from '../util-methods';
-import { CELL_VALUE_TRANSFORMER, COLUMN_NAMES, COLUMN_NUMBERS, EXCEL_METADATA } from './constants';
+import { isArrayNotEmpty, isObject, objectHasCustomProp } from '../util-methods';
+import { CELL_VALUE_TRANSFORMER, COLUMN_NAMES, COLUMN_NUMBERS, EXCEL_METADATA, PROP } from './constants';
 
 /**
  * Overrides setter and getter of property
@@ -73,7 +73,7 @@ function getValueMapper(values: any, metadata): (obj, rows: any[]) => void {
   let headers;
   const isValuesTypeOfArray = Array.isArray(values);
   if (isValuesTypeOfArray) {
-    headers = getObjectKeysValues(metadata[COLUMN_NUMBERS]);
+    headers = Object.keys(metadata[COLUMN_NUMBERS]);
   } else if (isObject(values)) {
     headers = values.headers;
   } else {
@@ -86,25 +86,25 @@ function getValueMapper(values: any, metadata): (obj, rows: any[]) => void {
 
   return (newInstance, rows: any[]) => {
     headers.forEach((header, index) => {
-      const mappedPropertyName = propertyNamesCache[header] || getKeyIfValueIsEqualTo(header, metadataToUse);
+      const propertyName = propertyNamesCache[header] || (metadataToUse[header] ? header : getObjectKeyByPropertyValue(metadataToUse, PROP, header));
 
-      if (mappedPropertyName) {
-        const valueIndex = isValuesTypeOfArray ? +metadataToUse[mappedPropertyName] : index;
+      if (propertyName) {
+        const valueIndex = isValuesTypeOfArray ? +metadataToUse[propertyName][PROP] : index;
 
-        const transformer = getNestedPropertyValueFromObject(newInstance[CELL_VALUE_TRANSFORMER], mappedPropertyName);
+        const transformer = metadataToUse[propertyName][CELL_VALUE_TRANSFORMER];
 
         let valueToSet = rows[valueIndex];
 
         if (transformer) {
           valueToSet = transformer.call(undefined, valueToSet);
         }
-        newInstance[mappedPropertyName] = valueToSet;
-        propertyNamesCache[header] = mappedPropertyName;
+        
+        newInstance[propertyName] = valueToSet;
+        propertyNamesCache[header] = propertyName;
       }
     });
   }
 }
-
 
 
 /**
@@ -125,4 +125,25 @@ function throwErrorIfInputIsInvalid(val: any, targetClassInstance: any): void {
     throw new Error(`Please provide 'headers' property in the values.`)
   }
 
+}
+
+/**
+ * returns object key which value's is equal to valueToCompare
+ * @param object {address: {zipCode: 4545}}
+ * @param prop 'zipCode'
+ * @param valueToCompare 4545 
+ * @returns 'address'
+ */
+function getObjectKeyByPropertyValue(object: {
+  [key: string]: {}
+}, prop: string | number, valueToCompare: any): string {
+  if (!object || (prop === undefined || prop === null)) {
+    return;
+  }
+  const keys = Object.keys(object);
+  for (let i = 0; i < keys.length; i++) {
+    if (object[keys[i]][prop] === valueToCompare) {
+      return keys[i];
+    }
+  }
 }
