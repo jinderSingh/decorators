@@ -1,7 +1,111 @@
 # Decorators
-Decorators to parse ``XLSX`` npm excel library read operation result to TypeScript class.
+Decorators to parse ``XLSX`` npm excel library read operation result to Object.
+
+<hr>
 
 ## Example
+[Angular project](https://github.com/jinderSingh/decorator-demo)
+
+<hr>
+
+## Decorators implementation
+
+- <ins>@excelColumn</ins>
+  
+  * @excelColumn accepts 2 arguments. First argument is type of ``ExcelColumnType`` and second one is a ``transformer`` function. This decorator sets metadata to the types. 
+    
+
+    ``ExcelColumnType``
+    <p style="color: red">!Important¡ both properties ``targetPropertyName`` && ``columnNumber`` can not be used at same time. </p>
+    
+    - **targetPropertyName**: is used to map header properties from parsed excel to the class type properties. 
+    
+        This property is case sensative, if header from excel is ``name`` and value of this property is ``Name``, in this case there is no mapping.
+
+    ```typescript
+    
+        const parsedExcel = [
+            ['Name', 'LastName', 'age', 'salary'], // Headers from excels.
+            ['Jennifer', 'Wisozk', 25, 30000],
+            ['Danyka', 'Renner', 30, 40000],
+        ]
+
+        class Person {
+            @excelColumn({targetPropertyName: 'Name'})
+            name: string;
+        }
+
+    ```
+
+    - **columnNumber**: is used to map rows[index] to the class property. This property is used as ``index``.
+  
+    ```typescript
+    
+        const parsedExcel = [
+            ['Jennifer', 'Wisozk', 25, 30000],
+            ['Danyka', 'Renner', 30, 40000],
+        ]; // there are no headers
+
+        class Person {
+            @excelColumn({columnNumber: 1})
+            lastName: string;
+
+            @excelColumn({columnNumber: 3})
+            salary: number;
+
+            @excelColumn({columnNumber: 2})
+            age: number;
+        }
+
+    ```
+
+    ``transformer``
+    - Transformer should be type of function with one argument as input. Gives posibility to manipulate value before setting it to the object property.
+
+    ```typescript
+    
+        const parsedExcel = [
+            ['Jennifer', 'Wisozk', 25, 30000],
+            ['Danyka', 'Renner', 30, 40000],
+        ];
+
+        class Person {
+            @excelColumn({columnNumber: 1}, val => val.toLowerCase())
+            lastName: string; // value should be 'wisozk' for firts row
+
+            @excelColumn({columnNumber: 3}, val => +val * 5)
+            salary: number; // value should be 150000 for first row
+
+            @excelColumn({columnNumber: 2})
+            age: number;
+        }
+
+    ```
+- <ins>@excelRows</ins>
+    * @excelRows(ClassType) uses input class type to map rows to object. Overrides setter of property which has been marked with this decorator.
+
+    ```typescript
+    
+    class ExcelReader {
+
+        @excelRows(Person)
+        results: any; // setter of this property is overriden by @excelRows
+
+
+        readFile(): void  {
+            this.results = [
+                ['Jennifer', 'Wisozk', 25, 30000],
+                ['Danyka', 'Renner', 30, 40000],
+            ];
+        }
+
+    }
+    
+    ```
+
+<hr>
+
+## Usage Example
 
 ```typescript
     class ResultClass{
@@ -89,6 +193,3 @@ Decorators to parse ``XLSX`` npm excel library read operation result to TypeScri
 
 
 ```
-
-## Example project
-[Example project](https://github.com/jinderSingh/decorator-demo)
