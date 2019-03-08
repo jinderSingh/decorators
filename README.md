@@ -16,7 +16,7 @@ Decorators to parse ``XLSX`` npm excel library read operation result to Object.
     
 
     ``ExcelColumnType``
-    <p style="color: red">!Important¡ both properties ``targetPropertyName`` && ``columnNumber`` can not be used at same time. </p>
+    <p style="color: red">!Important¡ both properties `targetPropertyName` && `columnNumber` can not be used at same time. </p>
     
     - **targetPropertyName**: is used to map header properties from parsed excel to the class type properties. 
     
@@ -126,7 +126,7 @@ Decorators to parse ``XLSX`` npm excel library read operation result to Object.
         /** 
         *  SOURCE GITHUB REPO: https://github.com/SheetJS/js-xlsx/tree/1eb1ec985a640b71c5b5bbe006e240f45cf239ab/demos/angular2
         **/
-        readExcelFile(evt): void {
+        readExcelFileWithHeaders(evt): void {
             const target: DataTransfer = <DataTransfer>(evt.target);
             if (target.files.length !== 1) throw new Error('Cannot use multiple files');
             const reader: FileReader = new FileReader();
@@ -167,7 +167,7 @@ Decorators to parse ``XLSX`` npm excel library read operation result to Object.
         /** 
         *  SOURCE GITHUB REPO: https://github.com/SheetJS/js-xlsx/tree/1eb1ec985a640b71c5b5bbe006e240f45cf239ab/demos/angular2
         **/
-        readExcelFile(evt): void {
+        readExcelFileWithoutHeaders(evt): void {
             const target: DataTransfer = <DataTransfer>(evt.target);
             if (target.files.length !== 1) throw new Error('Cannot use multiple files');
             const reader: FileReader = new FileReader();
@@ -183,7 +183,7 @@ Decorators to parse ``XLSX`` npm excel library read operation result to Object.
                 /* save data */
                 const data = <AOA>(XLSX.utils.sheet_to_json(ws, {header: 1}));
 
-                // excel file should not contain headers or slice result array to remove headers row
+                // excel file should not contain headers or slice the result array to remove headers row
                 this.results = data
             };
             reader.readAsBinaryString(target.files[0]);
