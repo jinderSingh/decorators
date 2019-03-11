@@ -3,8 +3,15 @@ Decorators to parse ``XLSX`` npm excel library read operation result to Object.
 
 <hr>
 
+## Installation
+
+*  ``npm i excel-to-object-decorator --save``
+
+
+<hr>
+
 ## Example
-[Angular project](https://github.com/jinderSingh/decorator-demo)
+[Angular project example](https://github.com/jinderSingh/decorator-demo)
 
 <hr>
 
@@ -22,6 +29,8 @@ Decorators to parse ``XLSX`` npm excel library read operation result to Object.
     
         This property is case sensative, if header from excel is ``name`` and value of this property is ``Name``, in this case there is no mapping.
 
+        ***Use this property only if there are headers in excel file otherwise columnNumber.***
+
     ```typescript
     
         const parsedExcel = [
@@ -38,7 +47,9 @@ Decorators to parse ``XLSX`` npm excel library read operation result to Object.
     ```
 
     - **columnNumber**: is used to map rows[index] to the class property. This property is used as ``index``.
-  
+
+        To get little bit of performance, use this property over ``targetPropertyName`` if there are no headers in excel file or if there are slice them. 
+
     ```typescript
     
         const parsedExcel = [
@@ -71,7 +82,7 @@ Decorators to parse ``XLSX`` npm excel library read operation result to Object.
 
         class Person {
             @excelColumn({columnNumber: 1}, val => val.toLowerCase())
-            lastName: string; // value should be 'wisozk' for firts row
+            lastName: string; // value should be 'wisozk' for first row
 
             @excelColumn({columnNumber: 3}, val => +val * 5)
             salary: number; // value should be 150000 for first row
