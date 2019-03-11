@@ -3,13 +3,13 @@ import { ExcelColumnType } from './../models/excel-column.type';
 import { CELL_VALUE_TRANSFORMER, COLUMN_NAMES, COLUMN_NUMBERS, EXCEL_METADATA, PROP } from './constants';
 
 /**
- * Add's metadata to target class type
- * @param targetPropertyName 
+ * Sets metadata to class type
+ * @param param0 
  * @param transformer 
  */
 export function excelColumn({
   columnNumber,
-  targetPropertyName
+  header
 }: ExcelColumnType, transformer ? : (v) => any) {
   return function (target, key) {
     const metadata = target[EXCEL_METADATA] || {};
@@ -20,7 +20,7 @@ export function excelColumn({
       configurable: true
     }
 
-    throwErrorIfBothArePresent(columnNumber, targetPropertyName, target);
+    throwErrorIfBothArePresent(columnNumber, header, target);
 
     if (metadata[COLUMN_NAMES] === undefined) {
       metadata[COLUMN_NAMES] = {};
@@ -38,7 +38,7 @@ export function excelColumn({
     }
 
     metadata[COLUMN_NAMES][key] = {
-      [PROP]: targetPropertyName || key,
+      [PROP]: header || key,
       [CELL_VALUE_TRANSFORMER]: transformer && isFunction(transformer) ? transformer : null
     };
 

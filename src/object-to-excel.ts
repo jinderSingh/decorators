@@ -7,7 +7,7 @@ import { hasValue } from "./util-methods";
  * @param objectArrays 
  * @param classType 
  */
-export function objectToExcel<T>(classType: new() => T): (arr: []) => any[][] {
+export function objectToExcel < T > (classType: new() => T): (arr: []) => any[][] {
     const metadata = classType.prototype[EXCEL_METADATA];
     const classInstance = new classType();
 
