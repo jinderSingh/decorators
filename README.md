@@ -29,7 +29,7 @@ Decorators to parse ``XLSX`` npm excel library read operation result to Object.
     
         This property is case sensative, if header from excel is ``name`` and value of this property is ``Name``, in this case there is no mapping.
 
-        ***Use this property only if there are headers in excel file otherwise columnNumber.***
+        ***Use this property only if there are headers in excel file otherwise use columnNumber.***
 
     ```typescript
     
