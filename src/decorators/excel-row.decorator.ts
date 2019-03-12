@@ -1,11 +1,12 @@
-import { isArrayNotEmpty, isObject, objectHasCustomProp } from '../util-methods';
+import { ExcelRowType } from '../models/excel-row.type';
+import { hasValue, isArrayNotEmpty, objectHasCustomProp } from '../util-methods';
 import { CELL_VALUE_TRANSFORMER, COLUMN_NAMES, COLUMN_NUMBERS, EXCEL_METADATA, PROP } from './constants';
 
 /**
  * Overrides setter and getter of property
  * @param targetClass class type to which each row should be mapped
  */
-export function excelRows < T > (targetClass: new() => T) {
+export function excelRows < T > (targetClass: new() => T, headerConfs: ExcelRowType = {}) {
   return function (target: any, key: string) {
     let value = target[key];
 
@@ -21,17 +22,29 @@ export function excelRows < T > (targetClass: new() => T) {
       const typeInstance = new targetClass();
       const metadata = typeInstance[EXCEL_METADATA];
 
-      throwErrorIfInputIsInvalid(val, typeInstance);
+      throwErrorIfInputIsInvalid(headerConfs, metadata);
 
-      const mapper = getValueMapper(val, metadata);
+      const columnNumbersAreDefined = metadata && metadata[COLUMN_NUMBERS];
+
+      const {
+        headerRowIndex,
+        headers
+      } = headerConfs;
+
+      const finalHeaders = columnNumbersAreDefined ? null : (headers || val[headerRowIndex]);
+
+      if (!columnNumbersAreDefined) {
+        throwWarningIfHeadersAreEmpty(finalHeaders, typeInstance);
+      }
+
+
+      const mapper = getValueMapper(finalHeaders, metadata);
 
       if (!mapper) {
         return;
       }
 
-      const results = Array.isArray(val) ? val : val.results;
-      value = mapValuesToTargetTypeObjects(results, targetClass, mapper);
-
+      value = mapValuesToTargetTypeObjects(val, targetClass, mapper);
     };
 
 
@@ -69,18 +82,15 @@ function mapValuesToTargetTypeObjects(results: any[], targetClass: new() => any,
  * @param values
  * @param metadata 
  */
-function getValueMapper(values: any, metadata): (obj, rows: any[]) => void {
-  let headers;
-  const isValuesTypeOfArray = Array.isArray(values);
-  if (isValuesTypeOfArray) {
-    headers = Object.keys(metadata[COLUMN_NUMBERS]);
-  } else if (isObject(values)) {
-    headers = values.headers;
-  } else {
-    return;
-  }
+function getValueMapper(header: string[], metadata: {
+  [key: string]: any
+}): (obj, rows: any[]) => void {
 
-  const metadataToUse = metadata[isValuesTypeOfArray ? COLUMN_NUMBERS : COLUMN_NAMES];
+  const shouldUseColumnNumberMapping = !header;
+
+  const headers = shouldUseColumnNumberMapping ? Object.keys(metadata[COLUMN_NUMBERS]) : header;
+
+  const metadataToUse = metadata[shouldUseColumnNumberMapping ? COLUMN_NUMBERS : COLUMN_NAMES];
 
   const propertyNamesCache = {};
 
@@ -89,7 +99,7 @@ function getValueMapper(values: any, metadata): (obj, rows: any[]) => void {
       const propertyName = propertyNamesCache[header] || (metadataToUse[header] ? header : getObjectKeyByPropertyValue(metadataToUse, PROP, header));
 
       if (propertyName) {
-        const valueIndex = isValuesTypeOfArray ? +metadataToUse[propertyName][PROP] : index;
+        const valueIndex = shouldUseColumnNumberMapping ? +metadataToUse[propertyName][PROP] : index;
 
         const transformer = metadataToUse[propertyName][CELL_VALUE_TRANSFORMER];
 
@@ -98,7 +108,7 @@ function getValueMapper(values: any, metadata): (obj, rows: any[]) => void {
         if (transformer) {
           valueToSet = transformer.call(undefined, valueToSet);
         }
-        
+
         newInstance[propertyName] = valueToSet;
         propertyNamesCache[header] = propertyName;
       }
@@ -112,19 +122,21 @@ function getValueMapper(values: any, metadata): (obj, rows: any[]) => void {
  * @param val 
  * @param targetClassInstance 
  */
-function throwErrorIfInputIsInvalid(val: any, targetClassInstance: any): void {
+function throwErrorIfInputIsInvalid(val: ExcelRowType, metadata: {
+  [key: string]: any
+}): void {
 
-  if (Array.isArray(val)) {
-    if (!objectHasCustomProp(targetClassInstance[EXCEL_METADATA], COLUMN_NUMBERS)) {
-      throw new Error(`When setting value without headers please use 'columnNumber' property of @excelColumn decorator.`);
+  const columnNumbersAreDefined = metadata && metadata[COLUMN_NUMBERS];
+
+  if (!columnNumbersAreDefined) {
+
+    const headersPropertyIsNotDefined = !objectHasCustomProp(val, 'headers');
+    const headerRowIndexIsNotDefined = !hasValue(objectHasCustomProp(val, 'headerRowIndex'));
+
+    if (headersPropertyIsNotDefined && headerRowIndexIsNotDefined) {
+      throw new Error(`Please provide 'headerRowIndex' or 'headers' to @excelRows when using 'header' property in @excelColumn.`);
     }
-    return;
   }
-
-  if (isObject(val) && !objectHasCustomProp(val, 'headers')) {
-    throw new Error(`Please provide 'headers' property in the values.`)
-  }
-
 }
 
 /**
@@ -145,5 +157,11 @@ function getObjectKeyByPropertyValue(object: {
     if (object[keys[i]][prop] === valueToCompare) {
       return keys[i];
     }
+  }
+}
+
+function throwWarningIfHeadersAreEmpty(header: string[], classInstance: any): void {
+  if (!isArrayNotEmpty(header)) {
+    console.warn(`If headers are empty, there will be no mapping to object ${classInstance && classInstance.constructor.name}.`);
   }
 }

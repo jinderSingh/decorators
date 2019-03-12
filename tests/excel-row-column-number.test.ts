@@ -74,7 +74,7 @@ describe('map excel parsed data to array of objects', function () {
 
         expect(function () {
             excelColumn({
-                targetPropertyName: 'name',
+                header: 'name',
                 columnNumber: 2
             })(type, 'name')
         }).toThrow(expectedError);

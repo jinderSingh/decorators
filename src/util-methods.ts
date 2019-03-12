@@ -70,7 +70,7 @@ export function getNestedPropertyValueFromObject(obj, prop): any {
  * checks if array is empty or not
  * @param val 
  */
-export function isArrayNotEmpty(arr: []): boolean {
+export function isArrayNotEmpty(arr: any[]): boolean {
     if (!arr) {
         return;
     }
