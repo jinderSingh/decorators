@@ -3,7 +3,7 @@ import { hasValue } from "./util-methods";
 
 /**
  * converts array of objects to array of arrays, using classType metadata
- * TODO performance issues when using 'columnNumber', remove header row from results
+ * 
  * @param objectArrays 
  * @param classType 
  */

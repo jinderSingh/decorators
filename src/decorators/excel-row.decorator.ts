@@ -3,6 +3,7 @@ import { hasValue, isArrayNotEmpty, objectHasCustomProp } from '../util-methods'
 import { CELL_VALUE_TRANSFORMER, COLUMN_NAMES, COLUMN_NUMBERS, EXCEL_METADATA, PROP } from './constants';
 
 /**
+ * TODO performance issues when using 'columnNumber', remove header row from results
  * Overrides setter and getter of property
  * @param targetClass class type to which each row should be mapped
  */
