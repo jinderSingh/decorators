@@ -3,7 +3,6 @@ import { hasValue, isArrayNotEmpty, objectHasCustomProp } from '../util-methods'
 import { CELL_VALUE_TRANSFORMER, COLUMN_NAMES, COLUMN_NUMBERS, EXCEL_METADATA, PROP } from './constants';
 
 /**
- * TODO performance issues when using 'columnNumber', remove header row from results
  * Overrides setter and getter of property
  * @param targetClass class type to which each row should be mapped
  */
@@ -36,6 +35,7 @@ export function excelRows < T > (targetClass: new() => T, headerConfs: ExcelRowT
 
       if (!columnNumbersAreDefined) {
         throwWarningIfHeadersAreEmpty(finalHeaders, typeInstance);
+        val = val.slice(1);
       }
 
 
@@ -66,12 +66,14 @@ export function excelRows < T > (targetClass: new() => T, headerConfs: ExcelRowT
  * @param results excel rows [][]
  * @param targetClass class type which to map each row 
  */
-function mapValuesToTargetTypeObjects(results: any[], targetClass: new() => any, mapper: (obj, rows: any[]) => void): any[] {
+function mapValuesToTargetTypeObjects(results: any[], targetClass: new () => any, mapper: (obj, rows: any[]) => void): any[] {
+
   return results.reduce((prev, next) => {
-    const newInstanceOfTargetClass = new targetClass();
     if (!isArrayNotEmpty(next)) {
       return prev;
     }
+
+    const newInstanceOfTargetClass = new targetClass();
     mapper(newInstanceOfTargetClass, next);
     return prev.concat(newInstanceOfTargetClass);
   }, []);
@@ -153,6 +155,7 @@ function getObjectKeyByPropertyValue(object: {
   if (!object || (prop === undefined || prop === null)) {
     return;
   }
+  
   const keys = Object.keys(object);
   for (let i = 0; i < keys.length; i++) {
     if (object[keys[i]][prop] === valueToCompare) {
