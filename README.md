@@ -178,6 +178,12 @@ class Example {
             reader.readAsBinaryString(target.files[0]);
         }
 
+        
+        @excelToObjectParser(ResultClass, {headerRowIndex: 0})
+        excelDataHandler(@excelData data: ExampleClass[]) {
+            data.forEach(val => console.log(val.name));
+        }
+
     }
 
 
