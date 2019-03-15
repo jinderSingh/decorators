@@ -1,4 +1,4 @@
-import { COLUMN_NAMES, COLUMN_NUMBERS, EXCEL_METADATA, PROP } from "./decorators/constants";
+import { COLUMN_NAMES, COLUMN_NUMBERS, EXCEL_METADATA, PROP } from "./constants/constants";
 import { hasValue } from "./util-methods";
 
 /**

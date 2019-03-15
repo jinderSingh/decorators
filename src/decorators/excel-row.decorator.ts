@@ -1,6 +1,7 @@
+import { CELL_VALUE_TRANSFORMER, COLUMN_NAMES, COLUMN_NUMBERS, PROP } from '../constants/constants';
+import { mapParamterValueToObjects } from '../handlers/row-parser.handler';
 import { ExcelRowType } from '../models/excel-row.type';
 import { hasValue, isArrayNotEmpty, objectHasCustomProp } from '../util-methods';
-import { CELL_VALUE_TRANSFORMER, COLUMN_NAMES, COLUMN_NUMBERS, EXCEL_METADATA, PROP } from './constants';
 
 /**
  * Overrides setter and getter of property
@@ -15,37 +16,7 @@ export function excelRows < T > (targetClass: new() => T, headerConfs: ExcelRowT
     };
 
     const setter = function (val: any) {
-      if (!val) {
-        return;
-      }
-
-      const typeInstance = new targetClass();
-      const metadata = typeInstance[EXCEL_METADATA];
-
-      throwErrorIfInputIsInvalid(headerConfs, metadata);
-
-      const columnNumbersAreDefined = metadata && metadata[COLUMN_NUMBERS];
-
-      const {
-        headerRowIndex,
-        headers
-      } = headerConfs;
-
-      const finalHeaders = columnNumbersAreDefined ? null : (headers || val[headerRowIndex]);
-
-      if (!columnNumbersAreDefined) {
-        throwWarningIfHeadersAreEmpty(finalHeaders, typeInstance);
-        val = val.slice(1);
-      }
-
-
-      const mapper = getValueMapper(finalHeaders, metadata);
-
-      if (!mapper) {
-        return;
-      }
-
-      value = mapValuesToTargetTypeObjects(val, targetClass, mapper);
+      value = mapParamterValueToObjects(val, targetClass, headerConfs);
     };
 
 

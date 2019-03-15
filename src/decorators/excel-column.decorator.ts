@@ -1,6 +1,6 @@
+import { CELL_VALUE_TRANSFORMER, COLUMN_NAMES, COLUMN_NUMBERS, EXCEL_METADATA, PROP } from '../constants/constants';
 import { hasValue, isFunction } from '../util-methods';
 import { ExcelColumnType } from './../models/excel-column.type';
-import { CELL_VALUE_TRANSFORMER, COLUMN_NAMES, COLUMN_NUMBERS, EXCEL_METADATA, PROP } from './constants';
 
 /**
  * Sets metadata to class type

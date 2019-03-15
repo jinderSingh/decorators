@@ -49,7 +49,7 @@ const defaultExcelParsedValues = [
     ['France', '1', '4as454', 'Paris'],
     ['Germany', '3', '5a464a', 'Berlin'],
     ['Spain', '5', '5456', 'Madrid'],
-]
+];
 
 describe('map excel parsed data to array of objects', function () {
     it('should map result to object using column numbers as headers', function () {
