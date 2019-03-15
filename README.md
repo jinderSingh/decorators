@@ -17,6 +17,27 @@ Decorators to parse ``XLSX`` npm excel library read operation result to Object.
 
 ## Decorators implementation
 
+- <ins>@excelToObjectParser</ins>
+  * @excelToObjectParser (method type decorator) & @excelData (paramter type decorator) are developed to replace @excelRows decorator. 
+  * @excelToObjectParser overrides the argument value marked as @excelData
+
+```typescript
+
+class Example {
+
+    // initial value of data = [[1,'John']]
+    @excelToObjectParser(ObjectType)
+    excelHandler(@excelData data:any) {
+        // do business logic with parsed data
+        // data arg will have mapped values
+        // data arg value = [{rank: 1, name: 'John'}]
+    }
+}
+
+```
+  
+
+
 - <ins>@excelColumn</ins>
   
   * @excelColumn accepts 2 arguments. First argument is type of ``ExcelColumnType`` and second one is a ``transformer`` function. This decorator sets metadata to the types. 
