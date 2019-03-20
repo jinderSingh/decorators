@@ -44,9 +44,9 @@ class Example {
     
 
     ``ExcelColumnType``
-    <p style="color: red">!Important¡ both properties `targetPropertyName` && `columnNumber` can not be used at same time. </p>
+    <p style="color: red">!Important¡ both properties `header` && `columnNumber` can not be used at same time. </p>
     
-    - **targetPropertyName**: is used to map header properties from parsed excel to the class type properties. 
+    - **header**: is used to map header properties from parsed excel to the class type properties. 
     
         This property is case sensative, if header from excel is ``name`` and value of this property is ``Name``, in this case there is no mapping.
 
@@ -61,7 +61,7 @@ class Example {
         ]
 
         class Person {
-            @excelColumn({targetPropertyName: 'Name'})
+            @excelColumn({header: 'Name'})
             name: string;
         }
 
@@ -69,7 +69,7 @@ class Example {
 
     - **columnNumber**: is used to map rows[index] to the class property. This property is used as ``index``.
 
-        To get little bit of performance, use this property over ``targetPropertyName`` if there are no headers in excel file or if there are slice them. 
+        To get little bit of performance, use this property over ``header`` if there are no headers in excel file or if there are slice them. 
 
     ```typescript
     
@@ -140,19 +140,72 @@ class Example {
 ## Usage Example
 
 ```typescript
-    class ResultClass{
 
-        @excelColumn({targetPropertyName: 'label'})
+
+    class Example {
+
+        @excelColumn({header: 'label'})
         private name;
 
-        @excelColumn({targetPropetyName: 'price'})
+        @excelColumn({header: 'price'})
+        private total;
+
+    }
+
+
+    class ExampleImpl {
+        
+
+/** 
+        *  SOURCE GITHUB REPO: https://github.com/SheetJS/js-xlsx/tree/1eb1ec985a640b71c5b5bbe006e240f45cf239ab/demos/angular2
+        **/
+        readExcelFileWithoutHeaders(evt): void {
+            const target: DataTransfer = <DataTransfer>(evt.target);
+            if (target.files.length !== 1) throw new Error('Cannot use multiple files');
+            const reader: FileReader = new FileReader();
+            reader.onload = (e: any) => {
+                /* read workbook */
+                const bstr: string = e.target.result;
+                const wb: XLSX.WorkBook = XLSX.read(bstr, {type: 'binary'});
+
+                /* grab first sheet */
+                const wsname: string = wb.SheetNames[0];
+                const ws: XLSX.WorkSheet = wb.Sheets[wsname];
+
+                /* save data */
+                const data = <AOA>(XLSX.utils.sheet_to_json(ws, {header: 1}));
+
+                // excel file should not contain headers or slice the result array to remove headers row
+                this.results = excelDataHandler(data);
+            };
+            reader.readAsBinaryString(target.files[0]);
+        }
+
+
+        
+        @excelToObjectParser(ResultClass, {headerRowIndex: 0})
+        excelDataHandler(@excelData data: any) {
+            data.forEach(val => console.log(val.name));
+        }
+    }
+
+
+
+
+
+    class ExampleWithHeader{
+
+        @excelColumn({header: 'label'})
+        private name;
+
+        @excelColumn({header: 'price'})
         private total;
     }
 
 
     class ResultClassImpl {
 
-        @excelRows(ResultClass)
+        @excelRows(ExampleHeader)
         private results: any;
 
         /** 
@@ -177,18 +230,11 @@ class Example {
             };
             reader.readAsBinaryString(target.files[0]);
         }
-
-        
-        @excelToObjectParser(ResultClass, {headerRowIndex: 0})
-        excelDataHandler(@excelData data: ExampleClass[]) {
-            data.forEach(val => console.log(val.name));
-        }
-
     }
 
 
 
-    class Example {
+    class ExampleWithColumnNumber {
         @excelColumn({columNumber: 1}, val => val.toLowerCase())
         private name;
 
@@ -199,7 +245,7 @@ class Example {
 
     class ExampleClassImpl {
 
-        @excelRows(Example)
+        @excelRows(ExampleWithColumnNumber)
         private results: any;
 
         /** 
